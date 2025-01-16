@@ -4,13 +4,12 @@ A lightweight TypeScript library that turns Google Sheets into a simple database
 
 ## Features
 
-- 🔄 Full CRUD operations (Create, Read, Update, Delete)
+- 🔄 Simple CRUD operations (Insert or Update by Batch, Find All, Delete with id by Batch)
 - 📊 Uses Google Sheets as a database backend
 - 🚀 Type-safe with TypeScript
 - 🎯 Automatic type conversion for common data types
 - ⚡ Built-in caching for better performance
 - 📝 Simple API for data operations
-- 🔍 Strongly typed repository pattern
 
 ## Installation
 
@@ -22,12 +21,22 @@ yarn add googlesheet-litedb google-auth-library googleapis
 bun add googlesheet-litedb google-auth-library googleapis
 ```
 
-## Prerequisites
+## Prerequisites for this example
 
 1. Set up a Google Cloud Project
 2. Enable the Google Sheets API
 3. Create service account credentials
 4. Share your Google Sheet with the service account email
+
+```bash
+gcloud auth login
+
+gcloud config set project YOUR_PROJECT_ID
+
+gcloud services enable sheets.googleapis.com
+
+gcloud auth application-default login --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/spreadsheets
+```
 
 ## Usage
 
@@ -38,6 +47,10 @@ import { BaseExternalAccountClient, GoogleAuth } from 'google-auth-library';
 import { google } from 'googleapis';
 import { createSheetsRepository } from 'googlesheet-litedb';
 import type { Logger, TableConfig } from 'googlesheet-litedb';
+
+/********************
+ * Configure library
+ ********************/
 
 // Define your data structure
 type User = {
@@ -52,8 +65,8 @@ type User = {
 const userTableConfig: TableConfig = {
   spreadsheetId: 'YOUR_SPREADSHEET_ID',
   sheetName: 'Users',
-  firstColumnIdConfig: { attributeName: 'id', type: 'string' },
-  columns: [
+  firstColumnIdConfig: { attributeName: 'id', type: 'string' }, // should be the first column of your table
+  columns: [ // other columns of your table in the order in the sheet
     { attributeName: 'name', type: 'string' },
     { attributeName: 'email', type: 'string' },
     { attributeName: 'numberOfChildren', type: 'number' },
@@ -62,12 +75,7 @@ const userTableConfig: TableConfig = {
 };
 
 // Initialize Google Sheets client
-const auth = new GoogleAuth({
-  scopes: [
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive.file'
-  ]
-});
+const auth = new GoogleAuth({scopes: ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.file']});
 const authClient = await auth.getClient();
 const sheets = google.sheets({ version: 'v4', auth: authClient });
 
@@ -76,6 +84,10 @@ const logger: Logger = {
   info: (message, data) => console.log(message, data),
   error: (message, data) => console.error(message, data),
 };
+
+/********************
+ * Use the library
+ ********************/
 
 // Create repository
 const userRepository = await createSheetsRepository<User>(
@@ -141,8 +153,6 @@ The library includes built-in caching to improve performance. By default, cache 
 1. Always use the first column as the ID column
 2. Keep your sheet structure simple and flat
 3. Use appropriate data types for your columns
-4. Consider implementing rate limiting for large datasets
-5. Handle errors appropriately in your application
 
 ## Contributing
 

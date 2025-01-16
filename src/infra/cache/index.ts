@@ -1,6 +1,6 @@
 import type { Cache } from '../../types/cache';
 
-export const createCache = (cacheDurationMs = 5 * 60 * 1000): Cache => {
+export const createCache = (cacheDurationMs: number): Cache => {
   const dbCache = new Map<string, unknown>();
   const cacheTTL = new Map<string, number>();
 

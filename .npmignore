@@ -1,0 +1,15 @@
+# Source
+src/
+example/
+
+# Config files
+.eslintrc.js
+tsconfig.json
+bun.lockb
+
+# IDE
+.vscode/
+
+# LLM
+combined_for_llm.txt
+llm.sh

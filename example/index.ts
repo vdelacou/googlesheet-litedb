@@ -3,12 +3,18 @@ import { google } from 'googleapis';
 import { createLogger, format, transports } from 'winston';
 import { createSheetsRepository } from '../src/repository';
 import type { TableConfig } from '../src/types/config';
+import type { Logger } from '../src/types/logger';
 
 const logger = createLogger({
   level: 'info',
   format: format.json(),
   transports: [new transports.Console()],
 });
+
+const myLogger: Logger = {
+  info: (message, data) => logger.info(message, data),
+  error: (message, data) => logger.error(message, data),
+};
 
 export type User = {
   id: string;
@@ -27,47 +33,49 @@ const example = async (): Promise<void> => {
   const userTableConfig: TableConfig = {
     spreadsheetId: '1Bgv4A0RAkAyPeveFAXHz3WBZ3dEPUtitKSU48bue_0k',
     sheetName: 'Users',
+    firstColumnIdConfig: { attributeName: 'id', type: 'string' },
     columns: [
-      { columnIndex: 0, attributeName: 'id', type: 'string' },
-      { columnIndex: 1, attributeName: 'name', type: 'string' },
-      { columnIndex: 2, attributeName: 'email', type: 'string' },
-      { columnIndex: 3, attributeName: 'numberOfChildren', type: 'number' },
-      { columnIndex: 4, attributeName: 'createdAt', type: 'date' },
+      { attributeName: 'name', type: 'string' },
+      { attributeName: 'email', type: 'string' },
+      { attributeName: 'numberOfChildren', type: 'number' },
+      { attributeName: 'createdAt', type: 'date' },
     ],
   };
   // Initialize repository and service
-  const userRepository = await createSheetsRepository<User>(sheets, userTableConfig);
+  const userRepository = await createSheetsRepository<User>(sheets, userTableConfig, myLogger);
 
-  // Create user
+  // Create users
   const id = crypto.randomUUID();
-  await userRepository.insert({
-    id,
-    name: 'John Doe',
-    email: 'john@example.com',
-    numberOfChildren: 2,
-    createdAt: new Date(),
-  });
-  logger.info('New user created');
+  await userRepository.insertOrUpdate([
+    {
+      id,
+      name: 'John Doe',
+      email: 'john@example.com',
+      numberOfChildren: 2,
+      createdAt: new Date(),
+    },
+  ]);
+  logger.info('New users created');
 
-  // // Find all users
-  // const users = await userRepository.findAll();
-  // logger.info('All Users', { length: users });
+  // Update users
+  await userRepository.insertOrUpdate([
+    {
+      id,
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      numberOfChildren: 3,
+      createdAt: new Date(),
+    },
+  ]);
+  logger.info('Users updated');
 
-  // Find user
-  const user = await userRepository.findBy({ id: '333' });
-  logger.info('User found', { user });
+  // Find all users
+  const users = await userRepository.findAll();
+  logger.info('All Users', { length: users });
 
-  // // Search users
-  // const usersFoundBy = await userRepository.findBy({ name: 'John Doe' });
-  // logger.info('Users found', usersFoundBy);
-
-  // // Update user
-  // const updatedUser = await userRepository.update('1', { name: 'Jane Doe' });
-  // logger.info('User updated', updatedUser);
-
-  // // Delete user
-  // const deleted = await userRepository.delete('1');
-  // logger.info('User deleted', deleted);
+  // Delete user
+  await userRepository.deleteByIds([id]);
+  logger.info('User deleted');
 };
 
 example();

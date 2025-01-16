@@ -1,5 +1,4 @@
 export type ColumnConfig = {
-  columnIndex: number;
   attributeName: string;
   type: 'string' | 'number' | 'date' | 'boolean' | 'array' | 'object';
 };
@@ -7,5 +6,6 @@ export type ColumnConfig = {
 export type TableConfig = {
   spreadsheetId: string;
   sheetName: string;
+  firstColumnIdConfig: { attributeName: string; type: 'string' };
   columns: ColumnConfig[];
 };

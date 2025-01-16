@@ -76,7 +76,7 @@ const userTableConfig: TableConfig = {
 
 // Initialize Google Sheets client
 const auth = new GoogleAuth({scopes: ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.file']});
-const authClient = await auth.getClient();
+const authClient = (await auth.getClient()) as BaseExternalAccountClient;
 const sheets = google.sheets({ version: 'v4', auth: authClient });
 
 // Initialize logger

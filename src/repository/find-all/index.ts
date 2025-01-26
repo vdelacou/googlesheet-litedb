@@ -3,9 +3,8 @@ import { restoreObjectFromString } from '../../helpers/data/restore-object-from-
 import { buildRange } from '../../helpers/sheets/build-range';
 import type { Cache } from '../../types/cache';
 import type { TableConfig } from '../../types/config';
-import type { Logger } from '../../types/logger';
 
-export const findAll = async <T>(sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache, logger: Logger): Promise<T[]> => {
+export const findAll = async <T>(sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache): Promise<T[]> => {
   const { sheetName, spreadsheetId, columns, firstColumnIdConfig } = tableConfig;
 
   const cacheKey = `findAll-${sheetName}`;
@@ -39,8 +38,6 @@ export const findAll = async <T>(sheets: sheets_v4.Sheets, tableConfig: TableCon
 
     return restoreObjectFromString<T>(stringObject, tableConfig);
   });
-
-  logger.info('Find All', { count: entities.length });
 
   cache.setCache(cacheKey, entities);
   return entities;

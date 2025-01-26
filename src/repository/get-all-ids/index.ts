@@ -2,14 +2,13 @@ import type { sheets_v4 } from 'googleapis';
 import { buildRange } from '../../helpers/sheets/build-range';
 import type { Cache } from '../../types/cache';
 import type { TableConfig } from '../../types/config';
-import type { Logger } from '../../types/logger';
 
 export type IdWithRow = {
   id: string;
   rowIndex: number;
 };
 
-export const getAllIds = async (sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache, logger: Logger): Promise<IdWithRow[]> => {
+export const getAllIds = async (sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache): Promise<IdWithRow[]> => {
   const { sheetName, spreadsheetId } = tableConfig;
 
   const cacheKey = `getAllIds-${sheetName}`;
@@ -26,8 +25,6 @@ export const getAllIds = async (sheets: sheets_v4.Sheets, tableConfig: TableConf
     id: row[0],
     rowIndex: index + 1,
   }));
-
-  logger.info('Get All IDs from sheet', { count: idsWithRows.length });
 
   cache.setCache(cacheKey, idsWithRows);
   return idsWithRows;

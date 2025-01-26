@@ -22,13 +22,12 @@
     "typescript-eslint": "^8.19.1"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "googleapis": "^144.0.0",
+    "google-auth-library": "^9.15.0"
   },
   "dependencies": {
-    "google-auth-library": "^9.15.0",
-    "google-spreadsheet": "^4.1.4",
-    "googleapis": "^144.0.0",
-    "winston": "^3.17.0"
+    "google-spreadsheet": "^4.1.4"
   },
   "license": "MIT",
   "files": [

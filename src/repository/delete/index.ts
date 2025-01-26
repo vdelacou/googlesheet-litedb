@@ -2,14 +2,13 @@ import type { sheets_v4 } from 'googleapis';
 import { buildRange } from '../../helpers/sheets/build-range';
 import type { Cache } from '../../types/cache';
 import type { TableConfig } from '../../types/config';
-import type { Logger } from '../../types/logger';
 import { getAllIds } from '../get-all-ids';
 
-export const deleteByIds = async (ids: string[], sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache, logger: Logger): Promise<void> => {
+export const deleteByIds = async (ids: string[], sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache): Promise<void> => {
   const { spreadsheetId, sheetName, columns } = tableConfig;
 
   // Get current IDs and their positions
-  const idsWithRows = await getAllIds(sheets, tableConfig, cache, logger);
+  const idsWithRows = await getAllIds(sheets, tableConfig, cache);
 
   // Find rows to delete and sort them in descending order
   // (delete from bottom to top to avoid shifting issues)
@@ -34,8 +33,6 @@ export const deleteByIds = async (ids: string[], sheets: sheets_v4.Sheets, table
       ranges: requests.map((req) => req.range),
     },
   });
-
-  logger.info('Delete By IDs', { count: ids.length });
 
   // Clear cache since we modified the sheet
   cache.clearCache();

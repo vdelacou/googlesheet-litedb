@@ -3,20 +3,13 @@ import { convertObjectValuesToString } from '../../helpers/data/convert-object-v
 import { buildRange } from '../../helpers/sheets/build-range';
 import type { Cache } from '../../types/cache';
 import type { TableConfig } from '../../types/config';
-import type { Logger } from '../../types/logger';
 import { getAllIds } from '../get-all-ids';
 
-export const insertOrUpdate = async <T extends Record<string, unknown>>(
-  entities: T[],
-  sheets: sheets_v4.Sheets,
-  tableConfig: TableConfig,
-  cache: Cache,
-  logger: Logger
-): Promise<void> => {
+export const insertOrUpdate = async <T extends Record<string, unknown>>(entities: T[], sheets: sheets_v4.Sheets, tableConfig: TableConfig, cache: Cache): Promise<void> => {
   const { spreadsheetId, sheetName, columns, firstColumnIdConfig } = tableConfig;
 
   // Get existing IDs and their row positions
-  const idsWithRows = await getAllIds(sheets, tableConfig, cache, logger);
+  const idsWithRows = await getAllIds(sheets, tableConfig, cache);
 
   // Separate entities into updates and inserts
   const entitiesToUpdate: { entity: T; rowIndex: number }[] = [];
@@ -32,9 +25,6 @@ export const insertOrUpdate = async <T extends Record<string, unknown>>(
       entitiesToInsert.push(entity);
     }
   });
-
-  logger.info('Entities to insert', { count: entitiesToInsert.length });
-  logger.info('Entities to update', { count: entitiesToUpdate.length });
 
   // Handle updates if any
   if (entitiesToUpdate.length > 0) {

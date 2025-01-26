@@ -23,8 +23,7 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0",
-    "googleapis": "^144.0.0",
-    "google-auth-library": "^9.15.0"
+    "googleapis": "^144.0.0"
   },
   "dependencies": {
     "google-spreadsheet": "^4.1.4"

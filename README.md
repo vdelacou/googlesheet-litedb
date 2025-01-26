@@ -14,11 +14,11 @@ A lightweight TypeScript library that turns Google Sheets into a simple database
 ## Installation
 
 ```bash
-npm install googlesheet-litedb google-auth-library googleapis
+npm install googlesheet-litedb googleapis
 # or
-yarn add googlesheet-litedb google-auth-library googleapis
+yarn add googlesheet-litedb googleapis
 # or
-bun add googlesheet-litedb google-auth-library googleapis
+bun add googlesheet-litedb googleapis
 ```
 
 ## Prerequisites for this example
@@ -43,8 +43,8 @@ gcloud auth application-default login --scopes=https://www.googleapis.com/auth/c
 ### Basic Example
 
 ```typescript
-import { BaseExternalAccountClient, GoogleAuth } from 'google-auth-library';
 import { google } from 'googleapis';
+import type { Auth } from 'googleapis';
 import { createSheetsRepository } from 'googlesheet-litedb';
 import type { Logger, TableConfig } from 'googlesheet-litedb';
 
@@ -76,8 +76,8 @@ const userTableConfig: TableConfig = {
 
 // Initialize Google Sheets client
 const auth = new GoogleAuth({scopes: ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.file']});
-const authClient = (await auth.getClient()) as BaseExternalAccountClient;
-const sheets = google.sheets({ version: 'v4', auth: authClient });
+  const authClient = await auth.getClient();
+  const sheetsClient = google.sheets({ version: 'v4', auth: authClient as Auth.BaseExternalAccountClient });
 
 /********************
  * Use the library

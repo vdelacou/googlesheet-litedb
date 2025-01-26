@@ -79,12 +79,6 @@ const auth = new GoogleAuth({scopes: ['https://www.googleapis.com/auth/spreadshe
 const authClient = (await auth.getClient()) as BaseExternalAccountClient;
 const sheets = google.sheets({ version: 'v4', auth: authClient });
 
-// Initialize logger
-const logger: Logger = {
-  info: (message, data) => console.log(message, data),
-  error: (message, data) => console.error(message, data),
-};
-
 /********************
  * Use the library
  ********************/
@@ -93,7 +87,6 @@ const logger: Logger = {
 const userRepository = await createSheetsRepository<User>(
   sheets,
   userTableConfig,
-  logger,
   5 * 60 * 1000 // cache duration in milliseconds, default value is 5 minutes (argument is optional)
 );
 

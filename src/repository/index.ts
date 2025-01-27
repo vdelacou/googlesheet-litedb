@@ -7,11 +7,7 @@ import { deleteByIds } from './delete';
 import { findAll } from './find-all';
 import { insertOrUpdate } from './insert';
 
-export const createSheetsRepository = async <T extends Record<string, unknown>>(
-  sheets: sheets_v4.Sheets,
-  tableConfig: TableConfig,
-  cacheDurationMs = 5 * 60 * 1000
-): Promise<Repository<T>> => {
+export const createSheetsRepository = <T extends Record<string, unknown>>(sheets: sheets_v4.Sheets, tableConfig: TableConfig, cacheDurationMs = 5 * 60 * 1000): Repository<T> => {
   const cache: Cache = createCache(cacheDurationMs);
 
   return {

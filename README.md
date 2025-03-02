@@ -35,6 +35,8 @@ gcloud config set project YOUR_PROJECT_ID
 
 gcloud services enable sheets.googleapis.com
 
+gcloud services enable drive.googleapis.com
+
 gcloud auth application-default login --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/spreadsheets
 ```
 
@@ -43,10 +45,10 @@ gcloud auth application-default login --scopes=https://www.googleapis.com/auth/c
 ### Basic Example
 
 ```typescript
+import { GoogleAuth } from 'google-auth-library';
 import { google } from 'googleapis';
-import type { Auth } from 'googleapis';
-import { createSheetsRepository } from 'googlesheet-litedb';
-import type { Logger, TableConfig } from 'googlesheet-litedb';
+import type { TableConfig } from './src';
+import { createSheetsRepository } from './src';
 
 /********************
  * Configure library
@@ -63,10 +65,11 @@ type User = {
 
 // Configure your table
 const userTableConfig: TableConfig = {
-  spreadsheetId: 'YOUR_SPREADSHEET_ID',
+  spreadsheetId: '1jEhnMVntZZcyWsfyZ16_n_aotlClFLyqwHWJVkgoVpA',
   sheetName: 'Users',
   firstColumnIdConfig: { attributeName: 'id', type: 'string' }, // should be the first column of your table
-  columns: [ // other columns of your table in the order in the sheet
+  columns: [
+    // other columns of your table in the order in the sheet
     { attributeName: 'name', type: 'string' },
     { attributeName: 'email', type: 'string' },
     { attributeName: 'numberOfChildren', type: 'number' },
@@ -75,17 +78,15 @@ const userTableConfig: TableConfig = {
 };
 
 // Initialize Google Sheets client
-const auth = new GoogleAuth({scopes: ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive.file']});
-  const authClient = await auth.getClient();
-  const sheetsClient = google.sheets({ version: 'v4', auth: authClient as Auth.BaseExternalAccountClient });
+const auth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.file'] });
+const sheetsClient = google.sheets({ version: 'v4', auth });
 
 /********************
  * Use the library
  ********************/
-
 // Create repository
-const userRepository = await createSheetsRepository<User>(
-  sheets,
+const userRepository = createSheetsRepository<User>(
+  sheetsClient,
   userTableConfig,
   5 * 60 * 1000 // cache duration in milliseconds, default value is 5 minutes (argument is optional)
 );
@@ -101,11 +102,10 @@ await userRepository.insertOrUpdate([
     createdAt: new Date(),
   },
 ]);
-
 // Find all users
-const users = await userRepository.findAll();
+await userRepository.findAll();
 
-// Delete users
+// Delete user
 await userRepository.deleteByIds(['1']);
 ```
 
